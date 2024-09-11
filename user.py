@@ -1,14 +1,28 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session, send_from_directory, jsonify, current_app
+from flask import Flask,Blueprint,Response, render_template, request, redirect, url_for, flash, session, send_from_directory, jsonify, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User
 import random
 import datetime
 import os
-from video_detection import process_video, create_directories, load_models, initialize
+from video_detection import process_video, create_directories, load_models, initialize,process_video_usingLiveCam
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 
 user_bp = Blueprint('user', __name__)
 
+
+@user_bp.route('/user/live_video')
+def live_video():
+    if 'user_id' not in session:
+        flash('You need to log in first.', 'warning')
+        return redirect(url_for('user.login'))
+    return render_template('live_video.html')
+
+@user_bp.route('/user/process_frame')
+def process_frame_endpoint():
+    LRCN_model, yolo_model, object_list, IMAGE_HEIGHT, IMAGE_WIDTH, SEQUENCE_LENGTH, CLASSES_LIST = load_models()
+    return Response(process_video_usingLiveCam(LRCN_model, yolo_model, object_list, IMAGE_HEIGHT, IMAGE_WIDTH, SEQUENCE_LENGTH, CLASSES_LIST),mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 
@@ -166,13 +180,7 @@ def download_file(filename):
     app = current_app
     return send_from_directory(app.config['PROCESSED_FOLDER'], filename)
 
-# Live Video Route
-@user_bp.route('/user/live_video')
-def live_video():
-    if 'user_id' not in session:
-        flash('You need to log in first.', 'warning')
-        return redirect(url_for('user.login'))
-    return render_template('live_video.html')
+
 
 @user_bp.route('/user/profile', methods=['GET', 'POST'])
 def profile():

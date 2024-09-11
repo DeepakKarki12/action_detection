@@ -13,10 +13,12 @@
             min-height: 100vh;
             margin: 0;
         }
+        
         nav {
             background-color: #007bff;
             padding: 10px;
         }
+        
         nav ul {
             list-style: none;
             margin: 0;
@@ -24,14 +26,73 @@
             display: flex;
             justify-content: center;
         }
+        
         nav ul li {
             margin: 0 15px;
         }
+        
         nav ul li a {
             color: #fff;
             text-decoration: none;
             font-weight: bold;
         }
+        
+        .button-37 {
+            background-color: #13aa52;
+            border: 1px solid #13aa52;
+            border-radius: 4px;
+            box-shadow: rgba(0, 0, 0, .1) 0 2px 4px 0;
+            color: #fff;
+            cursor: pointer;
+            font-family: "Akzidenz Grotesk BQ Medium", -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 16px;
+            font-weight: 400;
+            outline: none;
+            padding: 10px 25px;
+            text-align: center;
+            transition: transform 150ms, box-shadow 150ms;
+            user-select: none;
+        }
+
+        .button-37:hover {
+            box-shadow: rgba(0, 0, 0, .15) 0 3px 9px 0;
+            transform: translateY(-2px);
+        }
+        
+        .button-38 {
+            background-color: #e01d1d;
+            border: 1px solid #e01d1d;
+            border-radius: 4px;
+            box-shadow: rgba(0, 0, 0, .1) 0 2px 4px 0;
+            color: #fff;
+            cursor: pointer;
+            font-family: "Akzidenz Grotesk BQ Medium", -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 16px;
+            font-weight: 400;
+            outline: none;
+            padding: 10px 25px;
+            text-align: center;
+            transition: transform 150ms, box-shadow 150ms;
+            user-select: none;
+        }
+        
+        .button-38:hover {
+            box-shadow: rgba(0, 0, 0, .15) 0 3px 9px 0;
+            transform: translateY(-2px);
+        }
+        
+        
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px; /* Add space between buttons and canvas */
+        }
+
+        canvas {
+            border-radius: 8px;
+            border: 2px solid #000; /* Add a thick border */
+        }
+
         .container {
             max-width: 800px;
             margin: 30px auto;
@@ -40,13 +101,21 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            flex: 1;
         }
-        .welcome-message {
+        .message {
             font-size: 24px;
             font-weight: bold;
         }
+
     </style>
 </head>
+
 <body>
     <nav>
         <ul>
@@ -56,10 +125,36 @@
             <li><a href="{{ url_for('user.profile') }}">Profile</a></li>
         </ul>
     </nav>
-    <div class="container">
-        <h1 class="welcome-message">Welcome to Live Video</h1>
-    </div>
 
+    <main role="main" class="main-content">
+        <div class="container">
+            <h1 class="message">You can start recognizing human action live</h1>
+            <img src="" width="100%" id="frameImage" style="display:none;"/> <!-- Initially hidden -->
+            <div class="button-container" id="imageContainer">
+                <button class="button-37" type="button" id="startButton">Start</button>
+                <button class="button-38" type="button" id="stopButton">Stop</button>
+            </div>
+        </div>
+    </main>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const startButton = document.getElementById('startButton');
+            const stopButton = document.getElementById('stopButton');
+            const frameImage = document.getElementById('frameImage');
+
+            startButton.addEventListener('click', () => {
+                frameImage.style.display = 'block'; // Show the image
+                frameImage.src = "{{ url_for('user.process_frame_endpoint') }}"; // Set the src dynamically
+            });
+
+            stopButton.addEventListener('click', () => {
+                frameImage.style.display = 'none'; // Hide the image
+                frameImage.src = ""; // Clear the image source
+            });
+        });
+    </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
