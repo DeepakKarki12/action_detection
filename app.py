@@ -4,8 +4,8 @@ from user import user
 from admin import admin  # Import admin blueprint
 from models import db
 import os
-from dotenv import load_dotenv
-load_dotenv()
+# from dotenv import load_dotenv
+# load_dotenv()
 
 
 app = Flask(__name__)
@@ -25,11 +25,11 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("database_url")
-    # app.config['SECRET_KEY'] = os.environ.get("secret_key")  # Replace with your secret key
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("database_url")
+    app.config['SECRET_KEY'] = os.environ.get("secret_key")  # Replace with your secret key
     
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("database_url")
-    app.config['SECRET_KEY'] = os.getenv("secret_key")
+    # app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("database_url")
+    # app.config['SECRET_KEY'] = os.getenv("secret_key")
     
     db.init_app(app)
     app.register_blueprint(user)
