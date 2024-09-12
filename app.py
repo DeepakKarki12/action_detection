@@ -4,11 +4,15 @@ from user import user_bp
 from admin import admin_bp  # Import admin blueprint
 from models import db
 import os
-from pyngrok import ngrok
-ngrok.set_auth_token('2j6yZx3KvVeSEOhGHG0bEjNdWB8_2ri6c36iDuZZxMJxxCD47')
+from dotenv import load_dotenv
+load_dotenv()
+# from pyngrok import ngrok
+# ngrok.set_auth_token('2j6yZx3KvVeSEOhGHG0bEjNdWB8_2ri6c36iDuZZxMJxxCD47')
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-app.config['SECRET_KEY'] = 'S1t2a3r4'  # Replace with your secret key
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("database_url")
+# postgresql://actiondetection_user:L0IBBidtXFP5ofA6wWxqqrOtNPIFa0yz@dpg-crh6li56l47c73c39fg0-a.oregon-postgres.render.com/actiondetection
+app.config['SECRET_KEY'] = os.getenv("secret_key")  # Replace with your secret key
 
 # Initialize the database
 db.init_app(app)
@@ -31,7 +35,7 @@ if __name__ == '__main__':
 
     with app.app_context():
         db.create_all()
-    public_url = ngrok.connect(5000)
-    print("Public URL:", public_url)
+    # public_url = ngrok.connect(5000)
+    # print("Public URL:", public_url)
     app.run()
     #app.run(debug=True)
