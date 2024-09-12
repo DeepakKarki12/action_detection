@@ -1,12 +1,12 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from models import db, User
-admin_bp = Blueprint('admin', __name__)
+admin = Blueprint('admin', __name__)
 
 ADMIN_USERNAME = 'admin'
 ADMIN_PASSWORD_HASH = generate_password_hash('adminpassword', method='pbkdf2:sha256')
 
-@admin_bp.route('/admin/login', methods=['GET', 'POST'])
+@admin.route('/admin/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form.get('username')
@@ -23,7 +23,7 @@ def login():
 
     return render_template('admin_login.html')
 
-@admin_bp.route('/admin/dashboard', methods=['GET', 'POST'])
+@admin.route('/admin/dashboard', methods=['GET', 'POST'])
 def admin_dashboard():
     if 'user_id' not in session:  # Check if user is logged in
         flash('You need to log in first.', 'warning')
@@ -41,7 +41,7 @@ def admin_dashboard():
 
     return render_template('admin_dashboard.html', users=users, search_query=search_query)
 
-@admin_bp.route('/admin/accept_user/<int:user_id>', methods=['POST'])
+@admin.route('/admin/accept_user/<int:user_id>', methods=['POST'])
 def accept_user(user_id):
     if 'user_id' not in session:  # Check if user is logged in
         flash('You need to log in first.', 'warning')
@@ -53,7 +53,7 @@ def accept_user(user_id):
     flash('User has been accepted.', 'success')
     return redirect(url_for('admin.admin_dashboard'))
 
-@admin_bp.route('/admin/reject_user/<int:user_id>', methods=['POST'])
+@admin.route('/admin/reject_user/<int:user_id>', methods=['POST'])
 def reject_user(user_id):
     if 'user_id' not in session:  # Check if user is logged in
         flash('You need to log in first.', 'warning')
@@ -65,7 +65,7 @@ def reject_user(user_id):
     flash('User has been rejected and removed.', 'danger')
     return redirect(url_for('admin.admin_dashboard'))
 
-@admin_bp.route('/admin/logout')
+@admin.route('/admin/logout')
 def logout():
     session.pop('user_id', None)  # Clear user session
     flash('Logged out successfully.', 'info')

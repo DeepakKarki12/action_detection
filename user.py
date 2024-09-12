@@ -9,24 +9,24 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 
-user_bp = Blueprint('user', __name__)
+user = Blueprint('user', __name__)
 
 
-@user_bp.route('/user/live_video')
+@user.route('/user/live_video')
 def live_video():
     if 'user_id' not in session:
         flash('You need to log in first.', 'warning')
         return redirect(url_for('user.login'))
     return render_template('live_video.html')
 
-@user_bp.route('/user/process_frame')
+@user.route('/user/process_frame')
 def process_frame_endpoint():
     LRCN_model, yolo_model, object_list, IMAGE_HEIGHT, IMAGE_WIDTH, SEQUENCE_LENGTH, CLASSES_LIST = load_models()
     return Response(process_video_usingLiveCam(LRCN_model, yolo_model, object_list, IMAGE_HEIGHT, IMAGE_WIDTH, SEQUENCE_LENGTH, CLASSES_LIST),mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 
-@user_bp.route('/user/signup', methods=['GET', 'POST'])
+@user.route('/user/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         name = request.form.get('name')
@@ -97,11 +97,11 @@ def signup():
 
     return render_template('user_signup.html')
 
-@user_bp.route('/user/wait_for_verification')
+@user.route('/user/wait_for_verification')
 def wait_for_verification():
     return render_template('wait_for_verification.html')
 
-@user_bp.route('/user/login', methods=['GET', 'POST'])
+@user.route('/user/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         identifier = request.form.get('identifier')  # This will be username, email, or contact number
@@ -128,14 +128,14 @@ def login():
     return render_template('user_login.html')
 
 # Home Route
-@user_bp.route('/user/home')
+@user.route('/user/home')
 def home():
     if 'user_id' not in session:
         flash('You need to log in first.', 'warning')
         return redirect(url_for('user.login'))
     return render_template('home.html')
 
-@user_bp.route('/user/video_detection')
+@user.route('/user/video_detection')
 def video_detection():
     if 'user_id' not in session:
         flash('You need to log in first.', 'warning')
@@ -143,7 +143,7 @@ def video_detection():
     return render_template('video_detection.html')
 
 
-@user_bp.route('/user/upload', methods=['POST'])
+@user.route('/user/upload', methods=['POST'])
 def upload_file():
     # Initialize the directories, models, and configurations
     UPLOAD_FOLDER, PROCESSED_FOLDER, LRCN_model, yolo_model, object_list, IMAGE_HEIGHT, IMAGE_WIDTH, SEQUENCE_LENGTH, CLASSES_LIST = initialize()
@@ -175,14 +175,14 @@ def upload_file():
             print(f"Error during processing: {e}")
             return jsonify({'success': False, 'message': str(e)})
 
-@user_bp.route('/user/download/<filename>', methods=['GET'])
+@user.route('/user/download/<filename>', methods=['GET'])
 def download_file(filename):
     app = current_app
     return send_from_directory(app.config['PROCESSED_FOLDER'], filename)
 
 
 
-@user_bp.route('/user/profile', methods=['GET', 'POST'])
+@user.route('/user/profile', methods=['GET', 'POST'])
 def profile():
     if 'user_id' not in session:
         flash('You need to log in first.', 'warning')
@@ -227,7 +227,7 @@ def profile():
         return redirect(url_for('user.profile'))
 
     return render_template('profile.html', user=user)
-@user_bp.route('/user/logout', methods=['POST', 'GET'])
+@user.route('/user/logout', methods=['POST', 'GET'])
 def logout():
     session.pop('user_id', None)  # Remove user ID from session
     session.clear()  # Clear all session data
@@ -236,7 +236,7 @@ def logout():
 
 
 
-@user_bp.route('/user/forget_password', methods=['GET', 'POST'])
+@user.route('/user/forget_password', methods=['GET', 'POST'])
 def forget_password():
     if request.method == 'POST':
         user_id = request.form.get('user_id')  # This could be username, email, or contact number
@@ -268,7 +268,7 @@ def forget_password():
     return render_template('forget_password.html')
 
 
-@user_bp.route('/user/verify_otp', methods=['GET', 'POST'])
+@user.route('/user/verify_otp', methods=['GET', 'POST'])
 def verify_otp():
     if request.method == 'POST':
         otp = request.form.get('otp')
@@ -282,7 +282,7 @@ def verify_otp():
 
     return render_template('verify_otp.html')
 
-@user_bp.route('/user/change_password', methods=['GET', 'POST'])
+@user.route('/user/change_password', methods=['GET', 'POST'])
 def change_password():
     if request.method == 'POST':
         new_password = request.form.get('new_password')
