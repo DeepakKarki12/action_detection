@@ -10,7 +10,16 @@ import os
 
 app = Flask(__name__)
 
+# for development
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("database_url")
+app.config['SECRET_KEY'] = os.environ.get("secret_key")  # Replace with your secret key
+
+# for local
+# app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("database_url")
+# app.config['SECRET_KEY'] = os.getenv("secret_key")
+
 # Initialize the database
+db.init_app(app)
 
 def add_cache_control(response):
     if request.endpoint in ['admin_bp.admin_dashboard', 'admin_bp.logout']:
@@ -20,25 +29,25 @@ def add_cache_control(response):
     return response
 # Register blueprints
 
+app.register_blueprint(user_bp)
+app.register_blueprint(admin_bp)
+
+
+print("0")
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
+print("1")
 if __name__ == '__main__':
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("database_url")
-    app.config['SECRET_KEY'] = os.environ.get("secret_key")  # Replace with your secret key
-    
-    # app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("database_url")
-    # app.config['SECRET_KEY'] = os.getenv("secret_key")
-    
-    db.init_app(app)
-    app.register_blueprint(user_bp)
-    app.register_blueprint(admin_bp)
+    print("2")
 
     with app.app_context():
         db.create_all()
     
     # app.run()
-
+    print("3")
     port = int(os.environ.get('PORT', 5000)) 
+    print("4")
     app.run(host='0.0.0.0', port=port)
