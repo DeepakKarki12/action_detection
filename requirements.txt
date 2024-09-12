@@ -5,3 +5,4 @@ Flask-SQLAlchemy==3.1.1
 moviepy
 ultralytics
 gunicorn==23.0.0
+psycopg2
