@@ -1,4 +1,4 @@
-from flask import Flask,Blueprint,Response, render_template, request, redirect, url_for, flash, session, send_from_directory, jsonify, current_app
+from flask import Blueprint,Response, render_template, request, redirect, url_for, flash, session, send_from_directory, jsonify, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User
 import random
@@ -9,24 +9,24 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 
-user = Blueprint('user', __name__)
+user_bp = Blueprint('user_bp', __name__)
 
 
-@user.route('/user/live_video')
+@user_bp.route('/user/live_video')
 def live_video():
     if 'user_id' not in session:
         flash('You need to log in first.', 'warning')
-        return redirect(url_for('user.login'))
+        return redirect(url_for('user_bp.login'))
     return render_template('live_video.html')
 
-@user.route('/user/process_frame')
+@user_bp.route('/user/process_frame')
 def process_frame_endpoint():
     LRCN_model, yolo_model, object_list, IMAGE_HEIGHT, IMAGE_WIDTH, SEQUENCE_LENGTH, CLASSES_LIST = load_models()
     return Response(process_video_usingLiveCam(LRCN_model, yolo_model, object_list, IMAGE_HEIGHT, IMAGE_WIDTH, SEQUENCE_LENGTH, CLASSES_LIST),mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 
-@user.route('/user/signup', methods=['GET', 'POST'])
+@user_bp.route('/user/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         name = request.form.get('name')
@@ -78,7 +78,7 @@ def signup():
         if errors:
             for error in errors:
                 flash(error, 'danger')
-            return redirect(url_for('user.signup'))
+            return redirect(url_for('user_bp.signup'))
 
         # Hash the password
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
@@ -89,19 +89,20 @@ def signup():
             name=name, dob=dob, password=hashed_password
         )
 
+
         # Add to database
         db.session.add(new_user)
         db.session.commit()
 
-        return redirect(url_for('user.wait_for_verification'))
+        return redirect(url_for('user_bp.wait_for_verification'))
 
     return render_template('user_signup.html')
 
-@user.route('/user/wait_for_verification')
+@user_bp.route('/user/wait_for_verification')
 def wait_for_verification():
     return render_template('wait_for_verification.html')
 
-@user.route('/user/login', methods=['GET', 'POST'])
+@user_bp.route('/user/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         identifier = request.form.get('identifier')  # This will be username, email, or contact number
@@ -117,7 +118,7 @@ def login():
             if user.accepted:
                 if check_password_hash(user.password, password):
                     session['user_id'] = user.id
-                    return redirect(url_for('user.home'))
+                    return redirect(url_for('user_bp.home'))
                 else:
                     flash('Incorrect password.', 'danger')
             else:
@@ -128,22 +129,22 @@ def login():
     return render_template('user_login.html')
 
 # Home Route
-@user.route('/user/home')
+@user_bp.route('/user/home')
 def home():
     if 'user_id' not in session:
         flash('You need to log in first.', 'warning')
-        return redirect(url_for('user.login'))
+        return redirect(url_for('user_bp.login'))
     return render_template('home.html')
 
-@user.route('/user/video_detection')
+@user_bp.route('/user/video_detection')
 def video_detection():
     if 'user_id' not in session:
         flash('You need to log in first.', 'warning')
-        return redirect(url_for('user.login'))
+        return redirect(url_for('user_bp.login'))
     return render_template('video_detection.html')
 
 
-@user.route('/user/upload', methods=['POST'])
+@user_bp.route('/user/upload', methods=['POST'])
 def upload_file():
     # Initialize the directories, models, and configurations
     UPLOAD_FOLDER, PROCESSED_FOLDER, LRCN_model, yolo_model, object_list, IMAGE_HEIGHT, IMAGE_WIDTH, SEQUENCE_LENGTH, CLASSES_LIST = initialize()
@@ -170,23 +171,23 @@ def upload_file():
             # Process the video with all required arguments
             process_video(input_video_path, output_video_path, LRCN_model, yolo_model, object_list, IMAGE_HEIGHT, IMAGE_WIDTH, SEQUENCE_LENGTH, CLASSES_LIST)
             
-            return jsonify({'success': True, 'download_url': url_for('user.download_file', filename='processed_' + file.filename)})
+            return jsonify({'success': True, 'download_url': url_for('user_bp.download_file', filename='processed_' + file.filename)})
         except Exception as e:
             print(f"Error during processing: {e}")
             return jsonify({'success': False, 'message': str(e)})
 
-@user.route('/user/download/<filename>', methods=['GET'])
+@user_bp.route('/user/download/<filename>', methods=['GET'])
 def download_file(filename):
     app = current_app
     return send_from_directory(app.config['PROCESSED_FOLDER'], filename)
 
 
 
-@user.route('/user/profile', methods=['GET', 'POST'])
+@user_bp.route('/user/profile', methods=['GET', 'POST'])
 def profile():
     if 'user_id' not in session:
         flash('You need to log in first.', 'warning')
-        return redirect(url_for('user.login'))
+        return redirect(url_for('user_bp.login'))
 
     user = User.query.get(session['user_id'])
 
@@ -216,7 +217,7 @@ def profile():
         if errors:
             for error in errors:
                 flash(error, 'danger')
-            return redirect(url_for('user.profile'))
+            return redirect(url_for('user_bp.profile'))
 
         user.name = name
         user.contact_number = contact_number
@@ -224,19 +225,19 @@ def profile():
         db.session.commit()
 
         flash('Profile updated successfully!', 'success')
-        return redirect(url_for('user.profile'))
+        return redirect(url_for('user_bp.profile'))
 
     return render_template('profile.html', user=user)
-@user.route('/user/logout', methods=['POST', 'GET'])
+@user_bp.route('/user/logout', methods=['POST', 'GET'])
 def logout():
     session.pop('user_id', None)  # Remove user ID from session
     session.clear()  # Clear all session data
     flash('You have been logged out.', 'info')
-    return redirect(url_for('user.login'))  # Redirect to login page
+    return redirect(url_for('user_bp.login'))  # Redirect to login page
 
 
 
-@user.route('/user/forget_password', methods=['GET', 'POST'])
+@user_bp.route('/user/forget_password', methods=['GET', 'POST'])
 def forget_password():
     if request.method == 'POST':
         user_id = request.form.get('user_id')  # This could be username, email, or contact number
@@ -261,14 +262,14 @@ def forget_password():
             send_otp_email(user.email, otp)
             
             flash('An OTP has been sent to your registered email/phone.', 'success')
-            return redirect(url_for('user.verify_otp'))
+            return redirect(url_for('user_bp.verify_otp'))
         else:
             flash('User not found. Please check your details and try again.', 'danger')
 
     return render_template('forget_password.html')
 
 
-@user.route('/user/verify_otp', methods=['GET', 'POST'])
+@user_bp.route('/user/verify_otp', methods=['GET', 'POST'])
 def verify_otp():
     if request.method == 'POST':
         otp = request.form.get('otp')
@@ -276,13 +277,13 @@ def verify_otp():
 
         if user:
             session['otp'] = otp  # Store OTP in session
-            return redirect(url_for('user.change_password'))
+            return redirect(url_for('user_bp.change_password'))
         else:
             flash('Invalid or expired OTP.', 'danger')
 
     return render_template('verify_otp.html')
 
-@user.route('/user/change_password', methods=['GET', 'POST'])
+@user_bp.route('/user/change_password', methods=['GET', 'POST'])
 def change_password():
     if request.method == 'POST':
         new_password = request.form.get('new_password')
@@ -299,7 +300,7 @@ def change_password():
                 db.session.commit()
                 session.pop('otp', None)
                 flash('Password changed successfully. You can now log in.', 'success')
-                return redirect(url_for('user.login'))
+                return redirect(url_for('user_bp.login'))
             else:
                 flash('User not found.', 'danger')
         else:

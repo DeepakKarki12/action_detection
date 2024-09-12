@@ -67,7 +67,7 @@
             {% endif %}
         {% endwith %}
 
-        <form action="{{ url_for('user.login') }}" method="post">
+        <form action="{{ url_for('user_bp.login') }}" method="post">
             <div class="form-group">
                 <label for="identifier">Username, Email, or Contact Number:</label>
                 <input type="text" id="identifier" name="identifier" class="form-control" required>
@@ -78,7 +78,7 @@
             </div>
             <div class="button-group">
                 <button type="submit" class="btn btn-primary">Login</button>
-                <a href="{{ url_for('user.forget_password') }}" class="btn btn-secondary">Forget Password</a>
+                <a href="{{ url_for('user_bp.forget_password') }}" class="btn btn-secondary">Forget Password</a>
             </div>
         </form>
     </div>

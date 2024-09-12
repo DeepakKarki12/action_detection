@@ -90,15 +90,15 @@
 <body>
     <nav>
         <ul>
-            <li><a href="{{ url_for('user.home') }}">Home</a></li>
-            <li><a href="{{ url_for('user.video_detection') }}">Video Detection</a></li>
-            <li><a href="{{ url_for('user.live_video') }}">Live Video</a></li>
-            <li><a href="{{ url_for('user.profile') }}">Profile</a></li>
+            <li><a href="{{ url_for('user_bp.home') }}">Home</a></li>
+            <li><a href="{{ url_for('user_bp.video_detection') }}">Video Detection</a></li>
+            <li><a href="{{ url_for('user_bp.live_video') }}">Live Video</a></li>
+            <li><a href="{{ url_for('user_bp.profile') }}">Profile</a></li>
         </ul>
     </nav>
     <div class="container">
         <h1>Video Detection</h1>
-        <form id="videoForm" method="POST" enctype="multipart/form-data" action="{{ url_for('user.upload_file') }}">
+        <form id="videoForm" method="POST" enctype="multipart/form-data" action="{{ url_for('user_bp.upload_file') }}">
             <div class="form-group">
                 <label for="videoFile">Upload Video</label>
                 <input type="file" id="videoFile" name="videoFile" accept="video/*" required>
@@ -127,7 +127,7 @@
             // Create FormData object for AJAX request
             const formData = new FormData(this);
             
-            fetch('{{ url_for("user.upload_file") }}', {
+            fetch('{{ url_for("user_bp.upload_file") }}', {
                 method: 'POST',
                 body: formData
             })

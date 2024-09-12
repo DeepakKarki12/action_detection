@@ -60,7 +60,7 @@
                 </div>
             {% endif %}
         {% endwith %}
-        <form action="{{ url_for('user.verify_otp') }}" method="post">
+        <form action="{{ url_for('user_bp.verify_otp') }}" method="post">
             <div class="form-group">
                 <label for="otp">Enter OTP:</label>
                 <input type="text" id="otp" name="otp" class="form-control" required>

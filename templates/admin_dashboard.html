@@ -56,13 +56,13 @@
 <body>
     <div class="container">
         <div class="button-group">
-            <a href="{{ url_for('admin.logout') }}" class="logout">Logout</a>
+            <a href="{{ url_for('admin_bp.logout') }}" class="logout">Logout</a>
         </div>
 
         <h2>Admin Dashboard</h2>
 
         <!-- Search Form -->
-        <form class="search-form" action="{{ url_for('admin.admin_dashboard') }}" method="get">
+        <form class="search-form" action="{{ url_for('admin_bp.admin_dashboard') }}" method="get">
             <input type="text" name="search" class="form-control" placeholder="Search by username, name, or email" value="{{ search_query }}">
             <button type="submit" class="btn btn-primary mt-2">Search</button>
         </form>
@@ -105,7 +105,7 @@
                         {% if user.accepted %}
                             <button class="btn btn-success accepted">Accepted</button>
                         {% else %}
-                            <form action="{{ url_for('admin.accept_user', user_id=user.id) }}" method="post" style="display:inline;">
+                            <form action="{{ url_for('admin_bp.accept_user', user_id=user.id) }}" method="post" style="display:inline;">
                                 <button type="submit" class="btn btn-success action-button">Accept</button>
                             </form>
                         {% endif %}

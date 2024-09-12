@@ -58,7 +58,7 @@
             {% endif %}
         {% endwith %}
 
-        <form action="{{ url_for('user.signup') }}" method="post">
+        <form action="{{ url_for('user_bp.signup') }}" method="post">
             <div class="form-group">
                 <label for="name">Name:</label>
                 <input type="text" id="name" name="name" class="form-control" required>
