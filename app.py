@@ -6,7 +6,15 @@ from models import db
 import os
 # from dotenv import load_dotenv
 # load_dotenv()
-
+# from http.server import BaseHTTPRequestHandler
+ 
+# class handler(BaseHTTPRequestHandler):
+#     def do_GET(self):
+#         self.send_response(200)
+#         self.send_header('Content-type','text/plain')
+#         self.end_headers()
+#         self.wfile.write('Hello, world!'.encode('utf-8'))
+#         return
 
 app = Flask(__name__)
 
@@ -44,8 +52,8 @@ print("1")
 with app.app_context():
     db.create_all()
 
-# app.run()
 print("3")
-port = int(os.environ.get('PORT', 5000)) 
+app.run()
 print("4")
-app.run(host='0.0.0.0', port=port)
+# port = int(os.environ.get('PORT', 5000)) 
+# app.run(host='0.0.0.0', port=port)
